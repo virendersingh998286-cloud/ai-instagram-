@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rathore AI — Instagram Manager</title>
+<style>
+:root{--bg:#0b1020;--panel:#151c30;--muted:#98a5c1;--text:#f5f7ff;--accent:#a78bfa;--line:#29334b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:22px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-weight:800;font-size:20px}.logo span{color:var(--accent)}
+main{max-width:1000px;margin:auto;padding:20px 16px 50px}
+h1{font-size:27px;margin:8px 0}.muted{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}
+.stat{font-size:27px;font-weight:750;margin:10px 0 4px}
+.panel{margin-top:17px}
+h2{font-size:18px;margin:0 0 16px}
+label{display:block;font-size:13px;color:#c6cee0;margin:13px 0 7px}
+input,textarea,select{width:100%;padding:12px;background:#0c1325;border:1px solid #35415e;border-radius:10px;color:white;font:inherit}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:700;cursor:pointer}
+.primary{background:var(--accent);color:#17102b;width:100%;margin-top:15px}
+.secondary{background:#27314a;color:white}
+.notice{border:1px solid #66522b;background:#2a2417;color:#f5d89b;border-radius:12px;padding:13px;font-size:13px;line-height:1.6;margin-top:16px}
+.post{padding:14px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.post:last-child{border-bottom:0}
+.tag{display:inline-block;padding:5px 8px;border-radius:7px;background:#292442;color:#d4c5ff;font-size:12px;margin:7px 0}
+.post p{white-space:pre-wrap;font-size:14px;line-height:1.5}
+.post a{color:#c4b5fd}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.empty{padding:20px 0;color:var(--muted);font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}header{padding:17px 14px}main{padding:18px 13px}.stat{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">✦ Rathore <span>AI</span></div>
+  <span class="tag">CREATOR STUDIO</span>
+</header>
+
+<main>
+  <p class="muted">YOUR INSTAGRAM WORKSPACE</p>
+  <h1>Content Dashboard</h1>
+  <p class="muted">Plan your images, Reels and daily content in one place.</p>
+
+  <div class="grid">
+    <div class="card"><div class="muted">Total planned</div><div class="stat" id="total">0</div><div class="muted">Saved in this browser</div></div>
+    <div class="card"><div class="muted">Upcoming</div><div class="stat" id="upcoming">0</div><div class="muted">Waiting for schedule</div></div>
+    <div class="card"><div class="muted">Published</div><div class="stat" id="published">0</div><div class="muted">Confirmed posts only</div></div>
+  </div>
+
+  <div class="notice">
+    <strong>Demo mode:</strong> Posts are saved in this browser only.
+    This dashboard does not publish to Instagram yet. Real automatic
+    posting requires a secure backend and Meta's official Instagram API.
+  </div>
+
+  <section class="panel">
+    <h2>＋ Create a scheduled post</h2>
+    <form id="postForm">
+      <label for="type">Content type</label>
+      <select id="type">
+        <option value="IMAGE">Image</option>
+        <option value="REELS">Reel</option>
+      </select>
+
+      <label for="caption">Caption</label>
+      <textarea id="caption" required maxlength="2200" placeholder="Write your caption here..."></textarea>
+
+      <div class="actions">
+        <button type="button" class="secondary" id="captionIdea">Caption idea</button>
+        <button type="button" class="secondary" id="hashtags">Add hashtags</button>
+      </div>
+
+      <label for="media">Public media URL</label>
+      <input id="media" type="url" required placeholder="https://example.com/image.jpg">
+      <p class="muted">Use a publicly accessible image or video URL. This demo does not upload files.</p>
+
+      <div class="row">
+        <div>
+          <label for="date">Posting date</label>
+          <input id="date" type="date" required>
+        </div>
+        <div>
+          <label for="time">Posting time</label>
+          <input id="time" type="time" required>
+        </div>
+      </div>
+
+      <button class="primary" type="submit">Save scheduled post</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Your content queue</h2>
+    <div class="actions">
+      <button class="secondary" id="all">All</button>
+      <button class="secondary" id="images">Images</button>
+      <button class="secondary" id="reels">Reels</button>
+    </div>
+    <div id="posts"><div class="empty">No posts yet. Create your first post above.</div></div>
+  </section>
+
+  <footer>Rathore AI · Content planning dashboard</footer>
+</main>
+
+<script>
+const KEY = "rathore-ai-posts-v1";
+let filter = "ALL";
+let posts = [];
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+  if (Array.isArray(saved)) posts = saved;
+} catch(e) {}
+
+const $ = id => document.getElementById(id);
+const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(posts));
+    render();
+  } catch(e) {
+    alert("Browser storage is unavailable or full.");
+  }
+}
+
+function render() {
+  $("total").textContent = posts.length;
+  $("upcoming").textContent = posts.filter(p => p.status === "scheduled").length;
+  $("published").textContent = posts.filter(p => p.status === "published").length;
+
+  const list = posts.filter(p => filter === "ALL" || p.type === filter);
+  if (!list.length) {
+    $("posts").innerHTML = '<div class="empty">No posts in this view yet.</div>';
+    return;
+  }
+
+  $("posts").innerHTML = list.slice().sort((a,b) =>
+    (a.publishAt || "").localeCompare(b.publishAt || "")
+  ).map(p => `
+    <article class="post">
+      <span class="tag">${escapeHTML(p.type)}</span>
+      <span class="tag">${escapeHTML(p.status)}</span>
+      <p>${escapeHTML(p.caption)}</p>
+      <div class="muted">Scheduled: ${escapeHTML(p.publishAt.replace("T"," "))}</div>
+      <p><a href="${escapeHTML(p.media)}" target="_blank" rel="noopener noreferrer">Open media URL</a></p>
+      <div class="actions">
+        <button class="secondary" data-done="${escapeHTML(p.id)}">Mark published</button>
+        <button class="secondary" data-delete="${escapeHTML(p.id)}">Delete</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+$("postForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const publishAt = $("date").value + "T" + $("time").value;
+  const media = $("media").value.trim();
+
+  if (!/^https?:\/\//i.test(media)) {
+    alert("Please enter a valid public HTTP or HTTPS media URL.");
+    return;
+  }
+
+  posts.push({
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
+    type: $("type").value,
+    caption: $("caption").value.trim(),
+    media,
+    publishAt,
+    status: "scheduled"
+  });
+
+  save();
+  e.target.reset();
+  setDefaults();
+  alert("Post saved in this browser. It has NOT been posted to Instagram.");
+});
+
+$("posts").addEventListener("click", e => {
+  const done = e.target.dataset.done;
+  const del = e.target.dataset.delete;
+  if (done && confirm("Demo only: mark this item as published?")) {
+    posts = posts.map(p => p.id === done ? {...p,status:"published"} : p);
+    save();
+  }
+  if (del && confirm("Delete this planned post?")) {
+    posts = posts.filter(p => p.id !== del);
+    save();
+  }
+});
+
+$("all").onclick = () => {filter="ALL";render()};
+$("images").onclick = () => {filter="IMAGE";render()};
+$("reels").onclick = () => {filter="REELS";render()};
+
+$("captionIdea").onclick = () => {
+  const ideas = [
+    "Chasing new views and collecting memories ✨",
+    "Every day brings a new story. 🌍",
+    "Create your own path and enjoy the journey. 🤍"
+  ];
+  $("caption").value = ideas[Math.floor(Math.random()*ideas.length)];
+};
+
+$("hashtags").onclick = () => {
+  const box = $("caption");
+  if (!box.value.includes("#RathoreAI")) {
+    box.value = (box.value.trim() + "\n\n#RathoreAI #InstagramCreator #DailyInspiration").trim();
+  }
+};
+
+function setDefaults() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  $("date").value = d.toISOString().slice(0,10);
+  $("time").value = "18:00";
+}
+setDefaults();
+render();
+</script>
+</body>
+</html>
