@@ -3,38 +3,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rathore AI — Instagram Manager</title>
 <style>
 :root{--bg:#0b1020;--panel:#151c30;--muted:#98a5c1;--text:#f5f7ff;--accent:#a78bfa;--line:#29334b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{padding:22px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+header{padding:20px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
 .logo{font-weight:800;font-size:20px}.logo span{color:var(--accent)}
-main{max-width:1000px;margin:auto;padding:20px 16px 50px}
-h1{font-size:27px;margin:8px 0}.muted{color:var(--muted);font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
-.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}
-.stat{font-size:27px;font-weight:750;margin:10px 0 4px}
-.panel{margin-top:17px}
-h2{font-size:18px;margin:0 0 16px}
+main{max-width:900px;margin:auto;padding:20px 14px 45px}
+h1{font-size:27px;margin:8px 0}h2{font-size:18px;margin:0 0 14px}
+.muted{color:var(--muted);font-size:14px}
+.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{font-size:25px;font-weight:750;margin:9px 0}
 label{display:block;font-size:13px;color:#c6cee0;margin:13px 0 7px}
 input,textarea,select{width:100%;padding:12px;background:#0c1325;border:1px solid #35415e;border-radius:10px;color:white;font:inherit}
 textarea{min-height:90px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button{border:0;border-radius:10px;padding:12px 15px;font-weight:700;cursor:pointer}
+button{border:0;border-radius:10px;padding:12px 14px;font-weight:700;cursor:pointer}
 .primary{background:var(--accent);color:#17102b;width:100%;margin-top:15px}
 .secondary{background:#27314a;color:white}
-.notice{border:1px solid #66522b;background:#2a2417;color:#f5d89b;border-radius:12px;padding:13px;font-size:13px;line-height:1.6;margin-top:16px}
+.tag{display:inline-block;padding:5px 8px;border-radius:7px;background:#292442;color:#d4c5ff;font-size:12px;margin:4px}
+.notice{border:1px solid #66522b;background:#2a2417;color:#f5d89b;border-radius:10px;padding:12px;font-size:13px;line-height:1.5;margin:14px 0}
 .post{padding:14px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
-.post:last-child{border-bottom:0}
-.tag{display:inline-block;padding:5px 8px;border-radius:7px;background:#292442;color:#d4c5ff;font-size:12px;margin:7px 0}
 .post p{white-space:pre-wrap;font-size:14px;line-height:1.5}
-.post a{color:#c4b5fd}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
+.post a{color:#c4b5fd}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .empty{padding:20px 0;color:var(--muted);font-size:14px}
+#app{display:none}#login{max-width:440px;margin:35px auto}
+#message{white-space:pre-wrap;line-height:1.5;margin-top:12px;font-size:14px}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
-@media(max-width:560px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}header{padding:17px 14px}main{padding:18px 13px}.stat{font-size:24px}}
+@media(max-width:560px){.grid,.row{grid-template-columns:1fr}header{padding:16px 12px}.stat{font-size:23px}}
 </style>
 </head>
 <body>
@@ -44,188 +43,363 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
 </header>
 
 <main>
-  <p class="muted">YOUR INSTAGRAM WORKSPACE</p>
-  <h1>Content Dashboard</h1>
-  <p class="muted">Plan your images, Reels and daily content in one place.</p>
-
-  <div class="grid">
-    <div class="card"><div class="muted">Total planned</div><div class="stat" id="total">0</div><div class="muted">Saved in this browser</div></div>
-    <div class="card"><div class="muted">Upcoming</div><div class="stat" id="upcoming">0</div><div class="muted">Waiting for schedule</div></div>
-    <div class="card"><div class="muted">Published</div><div class="stat" id="published">0</div><div class="muted">Confirmed posts only</div></div>
-  </div>
-
-  <div class="notice">
-    <strong>Demo mode:</strong> Posts are saved in this browser only.
-    This dashboard does not publish to Instagram yet. Real automatic
-    posting requires a secure backend and Meta's official Instagram API.
-  </div>
-
-  <section class="panel">
-    <h2>＋ Create a scheduled post</h2>
-    <form id="postForm">
-      <label for="type">Content type</label>
-      <select id="type">
-        <option value="IMAGE">Image</option>
-        <option value="REELS">Reel</option>
-      </select>
-
-      <label for="caption">Caption</label>
-      <textarea id="caption" required maxlength="2200" placeholder="Write your caption here..."></textarea>
-
-      <div class="actions">
-        <button type="button" class="secondary" id="captionIdea">Caption idea</button>
-        <button type="button" class="secondary" id="hashtags">Add hashtags</button>
-      </div>
-
-      <label for="media">Public media URL</label>
-      <input id="media" type="url" required placeholder="https://example.com/image.jpg">
-      <p class="muted">Use a publicly accessible image or video URL. This demo does not upload files.</p>
-
-      <div class="row">
-        <div>
-          <label for="date">Posting date</label>
-          <input id="date" type="date" required>
-        </div>
-        <div>
-          <label for="time">Posting time</label>
-          <input id="time" type="time" required>
-        </div>
-      </div>
-
-      <button class="primary" type="submit">Save scheduled post</button>
+  <section id="login" class="panel">
+    <p class="muted">PRIVATE CREATOR WORKSPACE</p>
+    <h1>Welcome back</h1>
+    <p class="muted">Rathore AI · Personal dashboard</p>
+    <form id="loginForm">
+      <label for="email">Email address</label>
+      <input id="email" type="email" autocomplete="username" required placeholder="Your Supabase Auth email">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required placeholder="Your password">
+      <button class="primary" id="loginBtn" type="submit">Log in</button>
     </form>
+    <button class="secondary" id="forgotBtn" type="button" style="width:100%;margin-top:10px">Forgot password?</button>
+    <div id="message" role="status"></div>
   </section>
 
-  <section class="panel">
-    <h2>Your content queue</h2>
-    <div class="actions">
-      <button class="secondary" id="all">All</button>
-      <button class="secondary" id="images">Images</button>
-      <button class="secondary" id="reels">Reels</button>
+  <section id="app">
+    <p class="muted">YOUR INSTAGRAM WORKSPACE</p>
+    <h1>Content Dashboard</h1>
+    <p class="muted">Logged in as <strong>rathore</strong></p>
+    <button id="logoutBtn" class="secondary" type="button">Log out</button>
+
+    <div class="grid" style="margin-top:18px">
+      <div class="card"><div class="muted">Total planned</div><div class="stat" id="total">0</div></div>
+      <div class="card"><div class="muted">Upcoming</div><div class="stat" id="upcoming">0</div></div>
+      <div class="card"><div class="muted">Published</div><div class="stat" id="published">0</div></div>
     </div>
-    <div id="posts"><div class="empty">No posts yet. Create your first post above.</div></div>
-  </section>
 
+    <div class="notice">
+      Posts are stored in your Supabase database. Saving a post does not publish it to Instagram.
+      Actual auto-publishing requires Meta API approval and a secure scheduled backend.
+    </div>
+
+    <section class="panel">
+      <h2>＋ Create a scheduled post</h2>
+      <form id="postForm">
+        <label for="type">Content type</label>
+        <select id="type">
+          <option value="IMAGE">Image</option>
+          <option value="REELS">Reel</option>
+        </select>
+
+        <label for="caption">Caption</label>
+        <textarea id="caption" required maxlength="2200" placeholder="Write your caption here..."></textarea>
+        <div class="actions">
+          <button class="secondary" id="captionIdea" type="button">Caption idea</button>
+          <button class="secondary" id="hashtags" type="button">Add hashtags</button>
+        </div>
+
+        <label for="media">Public media URL</label>
+        <input id="media" type="url" required placeholder="https://example.com/image.jpg">
+        <p class="muted">Use a public image URL or video URL. This form does not upload files.</p>
+
+        <div class="row">
+          <div><label for="date">Posting date</label><input id="date" type="date" required></div>
+          <div><label for="time">Posting time</label><input id="time" type="time" required></div>
+        </div>
+        <button class="primary" id="saveBtn" type="submit">Save scheduled post</button>
+      </form>
+      <div id="appMessage" role="status"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Your content queue</h2>
+      <div class="actions">
+        <button class="secondary" data-filter="ALL">All</button>
+        <button class="secondary" data-filter="IMAGE">Images</button>
+        <button class="secondary" data-filter="REELS">Reels</button>
+      </div>
+      <div id="posts"><div class="empty">Loading posts...</div></div>
+    </section>
+  </section>
   <footer>Rathore AI · Content planning dashboard</footer>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const KEY = "rathore-ai-posts-v1";
-let filter = "ALL";
-let posts = [];
-try {
-  const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
-  if (Array.isArray(saved)) posts = saved;
-} catch(e) {}
+(() => {
+  "use strict";
 
-const $ = id => document.getElementById(id);
-const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
+  const SUPABASE_URL = "https://ajkdllnuivbifoagtxee.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_lFKvZcfQ6xuiDYK3LwzFKw_VkVpCMB3";
 
-function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(posts));
+  const $ = id => document.getElementById(id);
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentUser = null;
+  let posts = [];
+  let filter = "ALL";
+  let busy = false;
+
+  function message(id, text, error = false) {
+    $(id).textContent = text;
+    $(id).style.color = error ? "#fca5a5" : "#a7f3d0";
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  function setBusy(value) {
+    busy = value;
+    $("loginBtn").disabled = value;
+    $("saveBtn").disabled = value;
+    $("loginBtn").textContent = value ? "Please wait..." : "Log in";
+    $("saveBtn").textContent = value ? "Please wait..." : "Save scheduled post";
+  }
+
+  function showLogin() {
+    $("login").style.display = "block";
+    $("app").style.display = "none";
+    $("password").value = "";
+  }
+
+  function showApp() {
+    $("login").style.display = "none";
+    $("app").style.display = "block";
+  }
+
+  function setDefaults() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    $("date").value = d.toISOString().slice(0, 10);
+    $("time").value = "18:00";
+  }
+
+  function render() {
+    $("total").textContent = posts.length;
+    $("upcoming").textContent = posts.filter(p => p.status === "scheduled").length;
+    $("published").textContent = posts.filter(p => p.status === "published").length;
+
+    const list = posts.filter(p => filter === "ALL" || p.type === filter);
+    if (!list.length) {
+      $("posts").innerHTML = '<div class="empty">No posts in this view yet.</div>';
+      return;
+    }
+
+    $("posts").innerHTML = list.slice().sort((a, b) =>
+      (a.publish_at || "").localeCompare(b.publish_at || "")
+    ).map(p => {
+      const date = p.publish_at ? new Date(p.publish_at).toLocaleString() : "";
+      const safeUrl = /^https?:\/\//i.test(p.media_url || "") ? p.media_url : "";
+      return `
+        <article class="post">
+          <span class="tag">${escapeHTML(p.type)}</span>
+          <span class="tag">${escapeHTML(p.status)}</span>
+          <p>${escapeHTML(p.caption)}</p>
+          <div class="muted">Scheduled: ${escapeHTML(date)}</div>
+          ${safeUrl ? `<p><a href="${escapeHTML(safeUrl)}" target="_blank" rel="noopener noreferrer">Open media URL</a></p>` : ""}
+          <div class="actions">
+            ${p.status !== "published" ? `<button class="secondary" data-done="${escapeHTML(p.id)}">Mark published</button>` : ""}
+            <button class="secondary" data-delete="${escapeHTML(p.id)}">Delete</button>
+          </div>
+        </article>`;
+    }).join("");
+  }
+
+  async function loadPosts() {
+    if (!currentUser) return;
+    $("posts").innerHTML = '<div class="empty">Loading posts...</div>';
+
+    const { data, error } = await client
+      .from("scheduled_posts")
+      .select("id,user_id,caption,media_url,type,publish_at,status,created_at")
+      .eq("user_id", currentUser.id)
+      .order("publish_at", { ascending: true });
+
+    if (error) {
+      message("appMessage", "Could not load posts: " + error.message, true);
+      $("posts").innerHTML = '<div class="empty">Could not load posts. Check your table and RLS policies.</div>';
+      return;
+    }
+
+    posts = data || [];
     render();
-  } catch(e) {
-    alert("Browser storage is unavailable or full.");
-  }
-}
-
-function render() {
-  $("total").textContent = posts.length;
-  $("upcoming").textContent = posts.filter(p => p.status === "scheduled").length;
-  $("published").textContent = posts.filter(p => p.status === "published").length;
-
-  const list = posts.filter(p => filter === "ALL" || p.type === filter);
-  if (!list.length) {
-    $("posts").innerHTML = '<div class="empty">No posts in this view yet.</div>';
-    return;
   }
 
-  $("posts").innerHTML = list.slice().sort((a,b) =>
-    (a.publishAt || "").localeCompare(b.publishAt || "")
-  ).map(p => `
-    <article class="post">
-      <span class="tag">${escapeHTML(p.type)}</span>
-      <span class="tag">${escapeHTML(p.status)}</span>
-      <p>${escapeHTML(p.caption)}</p>
-      <div class="muted">Scheduled: ${escapeHTML(p.publishAt.replace("T"," "))}</div>
-      <p><a href="${escapeHTML(p.media)}" target="_blank" rel="noopener noreferrer">Open media URL</a></p>
-      <div class="actions">
-        <button class="secondary" data-done="${escapeHTML(p.id)}">Mark published</button>
-        <button class="secondary" data-delete="${escapeHTML(p.id)}">Delete</button>
-      </div>
-    </article>
-  `).join("");
-}
-
-$("postForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const publishAt = $("date").value + "T" + $("time").value;
-  const media = $("media").value.trim();
-
-  if (!/^https?:\/\//i.test(media)) {
-    alert("Please enter a valid public HTTP or HTTPS media URL.");
-    return;
+  async function enterApp(user) {
+    currentUser = user;
+    showApp();
+    message("appMessage", "");
+    await loadPosts();
   }
 
-  posts.push({
-    id: String(Date.now()) + Math.random().toString(16).slice(2),
-    type: $("type").value,
-    caption: $("caption").value.trim(),
-    media,
-    publishAt,
-    status: "scheduled"
+  $("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    message("message", "");
+
+    try {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        message("message", "Login failed: " + error.message, true);
+      } else {
+        $("password").value = "";
+        await enterApp(data.user);
+      }
+    } catch (err) {
+      message("message", "Connection error. Please try again.", true);
+    } finally {
+      setBusy(false);
+    }
   });
 
-  save();
-  e.target.reset();
-  setDefaults();
-  alert("Post saved in this browser. It has NOT been posted to Instagram.");
-});
+  $("forgotBtn").addEventListener("click", async () => {
+    const email = $("email").value.trim();
+    if (!email) {
+      message("message", "Pehle email address enter karo.", true);
+      return;
+    }
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: location.origin + location.pathname
+    });
+    message("message", error ? error.message : "If this email is registered, a password reset link will be sent.");
+  });
 
-$("posts").addEventListener("click", e => {
-  const done = e.target.dataset.done;
-  const del = e.target.dataset.delete;
-  if (done && confirm("Demo only: mark this item as published?")) {
-    posts = posts.map(p => p.id === done ? {...p,status:"published"} : p);
-    save();
+  $("logoutBtn").addEventListener("click", async () => {
+    const { error } = await client.auth.signOut();
+    if (error) {
+      message("appMessage", "Logout failed: " + error.message, true);
+      return;
+    }
+    currentUser = null;
+    posts = [];
+    showLogin();
+    message("message", "You have logged out.");
+  });
+
+  $("postForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!currentUser || busy) return;
+
+    const media = $("media").value.trim();
+    if (!/^https?:\/\//i.test(media)) {
+      message("appMessage", "Please enter a valid public HTTP or HTTPS media URL.", true);
+      return;
+    }
+
+    const localDate = $("date").value;
+    const localTime = $("time").value;
+    const publishDate = new Date(localDate + "T" + localTime);
+
+    if (!localDate || !localTime || Number.isNaN(publishDate.getTime())) {
+      message("appMessage", "Please choose a valid date and time.", true);
+      return;
+    }
+
+    const record = {
+      user_id: currentUser.id,
+      caption: $("caption").value.trim(),
+      media_url: media,
+      type: $("type").value,
+      publish_at: publishDate.toISOString(),
+      status: "scheduled"
+    };
+
+    setBusy(true);
+    message("appMessage", "");
+
+    try {
+      const { error } = await client.from("scheduled_posts").insert(record);
+      if (error) {
+        message("appMessage", "Save failed: " + error.message, true);
+        return;
+      }
+
+      $("postForm").reset();
+      setDefaults();
+      message("appMessage", "Post saved to Supabase. It has NOT been published to Instagram.");
+      await loadPosts();
+    } catch (err) {
+      message("appMessage", "Connection error while saving. Please try again.", true);
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  $("posts").addEventListener("click", async e => {
+    const done = e.target.dataset.done;
+    const del = e.target.dataset.delete;
+    if (!currentUser) return;
+
+    if (done && confirm("Mark this post as published? This only updates the dashboard; it does not publish to Instagram.")) {
+      const { error } = await client.from("scheduled_posts")
+        .update({ status: "published", published_at: new Date().toISOString() })
+        .eq("id", done)
+        .eq("user_id", currentUser.id);
+
+      if (error) message("appMessage", "Update failed: " + error.message, true);
+      else { message("appMessage", "Post status updated."); await loadPosts(); }
+    }
+
+    if (del && confirm("Delete this planned post?")) {
+      const { error } = await client.from("scheduled_posts")
+        .delete()
+        .eq("id", del)
+        .eq("user_id", currentUser.id);
+
+      if (error) message("appMessage", "Delete failed: " + error.message, true);
+      else { message("appMessage", "Post deleted."); await loadPosts(); }
+    }
+  });
+
+  document.querySelectorAll("[data-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      filter = button.dataset.filter;
+      render();
+    });
+  });
+
+  $("captionIdea").addEventListener("click", () => {
+    const ideas = [
+      "Chasing new views and collecting memories ✨",
+      "Every day brings a new story. 🌍",
+      "Create your own path and enjoy the journey. 🤍"
+    ];
+    $("caption").value = ideas[Math.floor(Math.random() * ideas.length)];
+  });
+
+  $("hashtags").addEventListener("click", () => {
+    const box = $("caption");
+    if (!box.value.includes("#RathoreAI")) {
+      box.value = (box.value.trim() + "\n\n#RathoreAI #InstagramCreator #DailyInspiration").trim();
+    }
+  });
+
+  async function init() {
+    setDefaults();
+    if (!window.supabase) {
+      message("message", "Supabase library could not load. Check your internet connection.", true);
+      return;
+    }
+
+    const { data, error } = await client.auth.getSession();
+    if (error) {
+      message("message", "Could not check login session. Please refresh.", true);
+      return;
+    }
+
+    if (data.session) await enterApp(data.session.user);
+    else showLogin();
+
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        currentUser = null;
+        posts = [];
+        showLogin();
+      }
+    });
   }
-  if (del && confirm("Delete this planned post?")) {
-    posts = posts.filter(p => p.id !== del);
-    save();
-  }
-});
 
-$("all").onclick = () => {filter="ALL";render()};
-$("images").onclick = () => {filter="IMAGE";render()};
-$("reels").onclick = () => {filter="REELS";render()};
-
-$("captionIdea").onclick = () => {
-  const ideas = [
-    "Chasing new views and collecting memories ✨",
-    "Every day brings a new story. 🌍",
-    "Create your own path and enjoy the journey. 🤍"
-  ];
-  $("caption").value = ideas[Math.floor(Math.random()*ideas.length)];
-};
-
-$("hashtags").onclick = () => {
-  const box = $("caption");
-  if (!box.value.includes("#RathoreAI")) {
-    box.value = (box.value.trim() + "\n\n#RathoreAI #InstagramCreator #DailyInspiration").trim();
-  }
-};
-
-function setDefaults() {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  $("date").value = d.toISOString().slice(0,10);
-  $("time").value = "18:00";
-}
-setDefaults();
-render();
+  init();
+})();
 </script>
 </body>
 </html>
